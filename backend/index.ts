@@ -6,25 +6,27 @@ import cors from "cors";
 
 
 const app: Express = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
+
+app.use(cors({origin: 'http://localhost:3001/',
+  credentials: true}));
+  
 app.use(express.urlencoded({extended: false}))
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({origin: 'http://localhost:3000',
-  credentials: true}));
+
 
 app.post("/", async (req: Request, res: Response) => {
   try {
-    
     const input: string = req.body.input;
     let sessionId: string = req.cookies.sessionId;
     console.log("input:", input);
 
     // Generate a new session ID if not present
     if (!sessionId) {
-        sessionId = uuidv4();
-        res.cookie("sessionId", sessionId, { httpOnly: true });
-    }
+      sessionId = uuidv4();
+      res.cookie("sessionId", sessionId, { httpOnly: true });
+  }
 
     return res.status(200).json(await gemini(input, sessionId));
 
